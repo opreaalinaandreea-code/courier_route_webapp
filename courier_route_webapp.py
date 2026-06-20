@@ -122,12 +122,11 @@ if mode == 'Date de test':
         st.dataframe(couriers, use_container_width=True)
 else:
     orders = read_file(orders_file)
-    couriers = read_file(couriers_file)
-    if orders is not None and couriers is not None:
-     st.subheader('Mapare coloane')
-     ocols = list(orders.columns)
-     ccols = list(couriers.columns)
-     col1, col2 = st.columns(2)
+    couriers = read_file(couriers_file)if orders is not None and couriers is not None:
+    st.subheader('Mapare coloane')
+    ocols = list(orders.columns)
+    ccols = list(couriers.columns)
+    col1, col2 = st.columns(2)
     with col1:
         order_address_col = st.selectbox('Coloana adresă comenzi', ocols, index=ocols.index('Adresa_originala') if 'Adresa_originala' in ocols else 0)
         order_client_col = st.selectbox('Coloana client comenzi', ocols, index=ocols.index('Client') if 'Client' in ocols else 0)
@@ -256,8 +255,7 @@ else:
                 'Status_confirmare_client': orow.get('Status_confirmare_client', 'Neconfirmat')
             })
             current = current + timedelta(minutes=BUFFER_MIN)
-            sec += 1
-                routes = pd.DataFrame(out_rows)
+            sec += 1    routes = pd.DataFrame(out_rows)
     export_df = routes.merge(orders, on='ID_Livrare', how='left', suffixes=('', '_original'))
     export_df = export_df[['Curier', 'Secventa', 'ID_Livrare'] + [c for c in orders.columns if c != 'ID_Livrare'] + ['Ora_estimata_sosire', 'Slot_fix_livrare', 'Status_confirmare_client']] if len(routes) else routes
     st.subheader('Rezumat curieri')
