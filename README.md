@@ -58,3 +58,7 @@ streamlit run courier_route_webapp.py
 - Repository name: `courier-route-webapp`
 - Root files: `courier_route_webapp.py`, `requirements.txt`, `README.md`
 - Use the repository description: `Web app for automated courier route planning with fixed delivery slots, geocoding, and route balancing.`
+
+## Export behavior
+- The export file now keeps all uploaded order fields together with route columns.
+- This makes the output easier to review and reuse.
