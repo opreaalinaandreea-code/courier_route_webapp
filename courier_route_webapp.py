@@ -123,8 +123,7 @@ if mode == 'Date de test':
 else:
     orders = read_file(orders_file)
     couriers = read_file(couriers_file)
-
-if orders is not None and couriers is not None:
+    if orders is not None and couriers is not None:
     st.subheader('Mapare coloane')
     ocols = list(orders.columns)
     ccols = list(couriers.columns)
@@ -258,8 +257,9 @@ if orders is not None and couriers is not None:
             })
             current = current + timedelta(minutes=BUFFER_MIN)
             sec += 1
-
-    routes = pd.DataFrame(out_rows)
+                routes = pd.DataFrame(out_rows)
+    export_df = routes.merge(orders, on='ID_Livrare', how='left', suffixes=('', '_original'))
+    export_df = export_df[['Curier', 'Secventa', 'ID_Livrare'] + [c for c in orders.columns if c != 'ID_Livrare'] + ['Ora_estimata_sosire', 'Slot_fix_livrare', 'Status_confirmare_client']] if len(routes) else routes
     st.subheader('Rezumat curieri')
     st.dataframe(pd.DataFrame({
         'Curier': couriers['Nume_curier'],
@@ -268,6 +268,6 @@ if orders is not None and couriers is not None:
     }), use_container_width=True)
     st.subheader('Trasee')
     st.dataframe(routes, use_container_width=True)
-    st.download_button('Download routes CSV', routes.to_csv(index=False).encode('utf-8-sig'), 'routes_output.csv', 'text/csv')
+    st.download_button('Download routes CSV', export_df.to_csv(index=False).encode('utf-8-sig'), 'routes_output.csv', 'text/csv')
 else:
     st.info('Incarca sau selecteaza date de test pentru a genera traseele.')
