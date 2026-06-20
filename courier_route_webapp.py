@@ -125,8 +125,27 @@ else:
     couriers = read_file(couriers_file)
 
 if orders is not None and couriers is not None:
+    st.subheader('Mapare coloane')
+    ocols = list(orders.columns)
+    ccols = list(couriers.columns)
+    col1, col2 = st.columns(2)
+    with col1:
+        order_address_col = st.selectbox('Coloana adresă comenzi', ocols, index=ocols.index('Adresa_originala') if 'Adresa_originala' in ocols else 0)
+        order_client_col = st.selectbox('Coloana client comenzi', ocols, index=ocols.index('Client') if 'Client' in ocols else 0)
+    with col2:
+        courier_name_col = st.selectbox('Coloana nume curier', ccols, index=ccols.index('Nume_curier') if 'Nume_curier' in ccols else 0)
+        courier_start_col = st.selectbox('Coloana punct plecare', ccols, index=ccols.index('Punct_plecare') if 'Punct_plecare' in ccols else 0) if 'Punct_plecare' in ccols else None
+
     orders = orders.copy().reset_index(drop=True)
     couriers = couriers.copy().reset_index(drop=True)
+    if order_address_col != 'Adresa_originala':
+        orders['Adresa_originala'] = orders[order_address_col].astype(str)
+    if order_client_col != 'Client':
+        orders['Client'] = orders[order_client_col].astype(str)
+    if courier_name_col != 'Nume_curier':
+        couriers['Nume_curier'] = couriers[courier_name_col].astype(str)
+    if courier_start_col is not None and courier_start_col != 'Punct_plecare':
+        couriers['Punct_plecare'] = couriers[courier_start_col].astype(str)
     if 'ID_Livrare' not in orders.columns:
         orders['ID_Livrare'] = range(1, len(orders) + 1)
     for col in ['Latitudine', 'Longitudine']:
@@ -139,9 +158,21 @@ if orders is not None and couriers is not None:
     if 'Geocoded_address' not in orders.columns:
         orders['Geocoded_address'] = None
 
+    address_col = None
+    for c in ['Adresa_originala', 'Adresa', 'Address']:
+        if c in orders.columns:
+            address_col = c
+            break
+    if address_col is None:
+        st.error('Lipseste coloana de adresa. Foloseste Adresa_originala sau Adresa.')
+        st.stop()
+    if address_col != 'Adresa_originala':
+        orders['Adresa_originala'] = orders[address_col].astype(str)
+
     with st.spinner('Geocoding addresses...'):
         for idx, row in orders[orders['Latitudine'].isna() | orders['Longitudine'].isna()].iterrows():
-            lat, lon, full = geocode_address(row['Adresa_originala'])
+            addr = row.get('Adresa_originala', row.get(address_col, ''))
+            lat, lon, full = geocode_address(addr)
             orders.at[idx, 'Latitudine'] = lat
             orders.at[idx, 'Longitudine'] = lon
             orders.at[idx, 'Geocoded_address'] = full
