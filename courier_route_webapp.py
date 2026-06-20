@@ -124,10 +124,10 @@ else:
     orders = read_file(orders_file)
     couriers = read_file(couriers_file)
     if orders is not None and couriers is not None:
-    st.subheader('Mapare coloane')
-    ocols = list(orders.columns)
-    ccols = list(couriers.columns)
-    col1, col2 = st.columns(2)
+     st.subheader('Mapare coloane')
+     ocols = list(orders.columns)
+     ccols = list(couriers.columns)
+     col1, col2 = st.columns(2)
     with col1:
         order_address_col = st.selectbox('Coloana adresă comenzi', ocols, index=ocols.index('Adresa_originala') if 'Adresa_originala' in ocols else 0)
         order_client_col = st.selectbox('Coloana client comenzi', ocols, index=ocols.index('Client') if 'Client' in ocols else 0)
